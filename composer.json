@@ -3,9 +3,9 @@
 	"description": "PHP's mail() function based on devorto/mail interface.",
 	"type": "library",
 	"repositories": {
-		"devorto-mail": {
+		"devorto/mail": {
 			"type": "git",
-			"url": "git@github.com:devorto/mail.git"
+			"url": "https://github.com/devorto/mail.git"
 		}
 	},
 	"require": {
