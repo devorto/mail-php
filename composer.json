@@ -11,5 +11,10 @@
 	"require": {
 		"php": "^7.1",
 		"devorto/mail": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"devorto\\mail\\php\\": "src/"
+		}
 	}
 }
