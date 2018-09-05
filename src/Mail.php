@@ -235,7 +235,7 @@ class Mail implements MailInterface
 		$content = sprintf("--%s\r\n", $boundary);
 		$content .= sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", $message->getMimeType());
 		$content .= "Content-Transfer-Encoding: base64\r\n\r\n";
-		$content .= chunk_split(base64_encode($message->getContent()), 70, "\r\n");
+		$content .= chunk_split(base64_encode($message->getContent()), 60, "\r\n");
 
 		return $content;
 	}
@@ -245,7 +245,7 @@ class Mail implements MailInterface
 		$content = sprintf("--%s\r\n", $boundary);
 		$content .= sprintf("Content-Type: %s; name=\"%s\"\r\n", $attachment->getMimeType(), $attachment->getName());
 		$content .= "Content-Transfer-Encoding: base64\r\n\r\n";
-		$content .= chunk_split(base64_encode($attachment->getContent()), 70, "\r\n");
+		$content .= chunk_split(base64_encode($attachment->getContent()), 60, "\r\n");
 
 		return $content;
 	}
