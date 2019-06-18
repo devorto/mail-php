@@ -27,6 +27,11 @@ class Mail implements MailInterface
 	protected $replyTo = null;
 
     /**
+     * @var MailAddressInterface
+     */
+    protected $cc = null;
+
+    /**
      * @var MailAttachmentInterface[]
      */
 	protected $attachments = [];
@@ -77,14 +82,22 @@ class Mail implements MailInterface
         return $this;
     }
 
-    public function getReplyTo(): MailAddressInterface
+    /**
+     * @return MailAddressInterface
+     */
+    public function getCc(): MailAddressInterface
     {
-        return $this->replyTo;
+        return $this->cc;
     }
 
-    public function setSubject(MailSubjectInterface $subject): MailInterface
+    /**
+     * @param MailAddressInterface $cc
+     *
+     * @return MailInterface
+     */
+    public function setCc(MailAddressInterface $cc): MailInterface
     {
-        $this->subject = $subject;
+        $this->cc = $cc;
 
         return $this;
     }
@@ -202,6 +215,14 @@ class Mail implements MailInterface
 				$headers[] = sprintf('Reply-To: %s <%s>', $this->replyTo->getName(), $this->replyTo->getAddress());
 			}
 		}
+
+        if ($this->cc !== null) {
+            if ($this->cc->getName() === null) {
+                $headers[] = sprintf('Cc: %s', $this->cc->getAddress());
+            } else {
+                $headers[] = sprintf('Cc: %s <%s>', $this->cc->getName(), $this->cc->getAddress());
+            }
+        }
 
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = sprintf('Content-Type: multipart/mixed; boundary="%s"', $boundary);
