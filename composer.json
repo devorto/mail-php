@@ -2,6 +2,15 @@
 	"name": "devorto/mail-php",
 	"description": "PHP's mail() function based on devorto/mail interface.",
 	"type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Geoffrey Dijkstra",
+            "email": "info@devorto.com",
+            "homepage": "https://www.devorto.com/",
+            "role": "Owner"
+        }
+    ],
 	"require": {
 		"php": "^7.1",
 		"devorto/mail": "^1.0.0"
