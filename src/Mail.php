@@ -11,19 +11,19 @@ use devorto\mail\MailSubjectInterface;
 
 class Mail implements MailInterface
 {
-    /**
-     * @var MailAddressInterface
-     */
-    protected $from = null;
+	/**
+	 * @var MailAddressInterface
+	 */
+	protected $from = null;
 
-    /**
-     * @var MailAddressInterface
-     */
+	/**
+	 * @var MailAddressInterface
+	 */
 	protected $to = null;
 
-    /**
-     * @var MailAddressInterface
-     */
+	/**
+	 * @var MailAddressInterface
+	 */
 	protected $replyTo = null;
 
 	/**
@@ -36,9 +36,9 @@ class Mail implements MailInterface
 	 */
 	protected $attachments = [];
 
-    /**
-     * @var MailMessageInterface;
-     */
+	/**
+	 * @var MailMessageInterface;
+	 */
 	protected $htmlMessage = null;
 
 	/**
@@ -46,41 +46,46 @@ class Mail implements MailInterface
 	 */
 	protected $textMessage = null;
 
-    /**
-     * @var MailSubjectInterface
-     */
+	/**
+	 * @var MailSubjectInterface
+	 */
 	protected $subject;
 
-    public function setFrom(MailAddressInterface $from): MailInterface
-    {
-        $this->from = $from;
+	public function getFrom(): MailAddressInterface
+	{
+		return $this->from;
+	}
 
-        return $this;
-    }
+	public function setFrom(MailAddressInterface $from): MailInterface
+	{
+		$this->from = $from;
 
-    public function getFrom(): MailAddressInterface
-    {
-        return $this->from;
-    }
+		return $this;
+	}
 
-    public function setTo(MailAddressInterface $to): MailInterface
-    {
-        $this->to = $to;
+	public function getTo(): MailAddressInterface
+	{
+		return $this->to;
+	}
 
-        return $this;
-    }
+	public function setTo(MailAddressInterface $to): MailInterface
+	{
+		$this->to = $to;
 
-    public function getTo(): MailAddressInterface
-    {
-        return $this->to;
-    }
+		return $this;
+	}
 
-    public function setReplyTo(MailAddressInterface $replyTo): MailInterface
-    {
-        $this->replyTo = $replyTo;
+	public function getReplyTo(): MailAddressInterface
+	{
+		return $this->replyTo;
+	}
 
-        return $this;
-    }
+	public function setReplyTo(MailAddressInterface $replyTo): MailInterface
+	{
+		$this->replyTo = $replyTo;
+
+		return $this;
+	}
 
 	public function getCc(): MailAddressInterface
 	{
@@ -94,25 +99,37 @@ class Mail implements MailInterface
 		return $this;
 	}
 
-    public function getSubject(): MailSubjectInterface
-    {
-        return $this->subject;
-    }
+	public function getSubject(): MailSubjectInterface
+	{
+		return $this->subject;
+	}
 
-    public function addAttachment(MailAttachmentInterface $attachment): MailInterface
-    {
-        $this->attachments[] = $attachment;
+	public function setSubject(MailSubjectInterface $subject): MailInterface
+	{
+		$this->subject = $subject;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * @return MailAttachmentInterface[]
-     */
-    public function getAttachments(): array
-    {
-        return $this->attachments;
-    }
+	public function addAttachment(MailAttachmentInterface $attachment): MailInterface
+	{
+		$this->attachments[] = $attachment;
+
+		return $this;
+	}
+
+	/**
+	 * @return MailAttachmentInterface[]
+	 */
+	public function getAttachments(): array
+	{
+		return $this->attachments;
+	}
+
+	public function getHtmlMessage(): MailMessageInterface
+	{
+		return $this->htmlMessage;
+	}
 
 	/**
 	 * @param MailMessageInterface $message
@@ -120,35 +137,13 @@ class Mail implements MailInterface
 	 * @return MailInterface
 	 * @throws MailException
 	 */
-    public function setHtmlMessage(MailMessageInterface $message): MailInterface
-    {
-    	if($message->getMimeType() !== 'text/html') {
+	public function setHtmlMessage(MailMessageInterface $message): MailInterface
+	{
+		if ($message->getMimeType() !== 'text/html') {
 			throw new MailException('Invalid mimetype set for html message');
 		}
 
-    	$this->htmlMessage = $message;
-
-        return $this;
-    }
-
-    public function getHtmlMessage(): MailMessageInterface
-    {
-        return $this->htmlMessage;
-    }
-
-	/**
-	 * @param MailMessageInterface $message
-	 *
-	 * @return MailInterface
-	 * @throws MailException
-	 */
-    public function setTextMessage(MailMessageInterface $message): MailInterface
-	{
-		if($message->getMimeType() !== 'text/plain') {
-			throw new MailException('Invalid mimetype set for text message');
-		}
-
-		$this->textMessage = $message;
+		$this->htmlMessage = $message;
 
 		return $this;
 	}
@@ -159,49 +154,66 @@ class Mail implements MailInterface
 	}
 
 	/**
-     * @return bool
-     * @throws MailException
-     */
-    public function send(): bool
-    {
-        if($this->to === null) {
-            throw new MailException('We have no idea where "to" send the mail');
-        }
+	 * @param MailMessageInterface $message
+	 *
+	 * @return MailInterface
+	 * @throws MailException
+	 */
+	public function setTextMessage(MailMessageInterface $message): MailInterface
+	{
+		if ($message->getMimeType() !== 'text/plain') {
+			throw new MailException('Invalid mimetype set for text message');
+		}
 
-        if($this->from === null) {
+		$this->textMessage = $message;
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 * @throws MailException
+	 */
+	public function send(): bool
+	{
+		if ($this->to === null) {
+			throw new MailException('We have no idea where "to" send the mail');
+		}
+
+		if ($this->from === null) {
 			throw new MailException('We have no idea where the mail came from');
 		}
 
-        if($this->subject === null) {
-            throw new MailException('What "subject" should the mail have?');
-        }
+		if ($this->subject === null) {
+			throw new MailException('What "subject" should the mail have?');
+		}
 
-        if(empty($this->textMessage) && empty($this->htmlMessage)) {
-            throw new MailException('We have no "message" to send');
-        }
+		if (empty($this->textMessage) && empty($this->htmlMessage)) {
+			throw new MailException('We have no "message" to send');
+		}
 
-		if($this->to->getName() === null) {
+		if ($this->to->getName() === null) {
 			$to = $this->to->getAddress();
 		} else {
 			$to = sprintf('%s <%s>', $this->to->getName(), $this->to->getAddress());
 		}
 
-        $boundary = uniqid('', true);
+		$boundary = uniqid('', true);
 
-        if($this->from->getName() === null) {
-            $headers[] = sprintf('From: %s', $this->from->getAddress());
-        } else {
-            $headers[] = sprintf('From: %s <%s>', $this->from->getName(), $this->from->getAddress());
-        }
+		if ($this->from->getName() === null) {
+			$headers[] = sprintf('From: %s', $this->from->getAddress());
+		} else {
+			$headers[] = sprintf('From: %s <%s>', $this->from->getName(), $this->from->getAddress());
+		}
 
-        if($this->replyTo === null) {
-			if($this->from->getName() === null) {
+		if ($this->replyTo === null) {
+			if ($this->from->getName() === null) {
 				$headers[] = sprintf('Reply-To: %s', $this->from->getAddress());
 			} else {
 				$headers[] = sprintf('Reply-To: %s <%s>', $this->from->getName(), $this->from->getAddress());
 			}
 		} else {
-			if($this->replyTo->getName() === null) {
+			if ($this->replyTo->getName() === null) {
 				$headers[] = sprintf('Reply-To: %s', $this->replyTo->getAddress());
 			} else {
 				$headers[] = sprintf('Reply-To: %s <%s>', $this->replyTo->getName(), $this->replyTo->getAddress());
@@ -219,31 +231,31 @@ class Mail implements MailInterface
 		$headers[] = 'MIME-Version: 1.0';
 		$headers[] = sprintf('Content-Type: multipart/mixed; boundary="%s"', $boundary);
 
-        $content = '';
+		$content = '';
 
-        if(isset($this->textMessage)) {
+		if (isset($this->textMessage)) {
 			$content .= static::renderMessage($this->textMessage, $boundary);
 		}
 
-		if(isset($this->htmlMessage)) {
+		if (isset($this->htmlMessage)) {
 			$content .= static::renderMessage($this->htmlMessage, $boundary);
 		}
 
-        foreach ($this->attachments as $attachment) {
-            $content .= static::renderAttachment($attachment, $boundary);
-        }
+		foreach ($this->attachments as $attachment) {
+			$content .= static::renderAttachment($attachment, $boundary);
+		}
 
-        $content .= sprintf("--%s--\r\n", $boundary);
+		$content .= sprintf("--%s--\r\n", $boundary);
 
-        return mail(
-            $to,
-            $this->subject->getSubject(),
-            $content,
-            implode("\r\n", $headers)
-        );
-    }
+		return mail(
+			$to,
+			$this->subject->getSubject(),
+			$content,
+			implode("\r\n", $headers)
+		);
+	}
 
-    protected static function renderMessage(MailMessageInterface $message, string $boundary): string
+	protected static function renderMessage(MailMessageInterface $message, string $boundary): string
 	{
 		$content = sprintf("--%s\r\n", $boundary);
 		$content .= sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", $message->getMimeType());
