@@ -14,18 +14,23 @@ class MailSubject implements MailSubjectInterface
 
     /**
      * MailSubject constructor.
+     *
      * @param string $subject
+     *
      * @throws MailSubjectException
      */
     public function __construct(string $subject)
     {
-        if(empty($subject)) {
+        if (empty($subject)) {
             throw new MailSubjectException('Variable $subject cannot be empty');
         }
 
         $this->subject = $subject;
     }
 
+    /**
+     * @return string
+     */
     public function getSubject(): string
     {
         return $this->subject;

@@ -24,23 +24,33 @@ class MailAttachment implements MailAttachmentInterface
      */
     private $mimeType;
 
+    /**
+     * MailAttachment constructor.
+     *
+     * @param string $name
+     * @param string $content
+     * @param string $mimeType
+     */
     public function __construct(string $name, string $content, string $mimeType = 'text/plain')
     {
-    	if(empty($name)) {
-			throw new MailAttachmentException('Variable $name cannot be empty');
-		}
-		if(empty($content)) {
-			throw new MailAttachmentException('Variable $content cannot be empty');
-		}
-		if(empty($mimeType)) {
-			throw new MailAttachmentException('Variable $mimeType cannot be empty');
-		}
+        if (empty($name)) {
+            throw new MailAttachmentException('Variable $name cannot be empty');
+        }
+        if (empty($content)) {
+            throw new MailAttachmentException('Variable $content cannot be empty');
+        }
+        if (empty($mimeType)) {
+            throw new MailAttachmentException('Variable $mimeType cannot be empty');
+        }
 
         $this->name = $name;
         $this->content = $content;
         $this->mimeType = $mimeType;
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
@@ -52,43 +62,51 @@ class MailAttachment implements MailAttachmentInterface
      */
     public function getContent(): string
     {
-        if(empty($this->content)) {
+        if (empty($this->content)) {
             throw new MailAttachmentException('Cannot get non-existing content');
         }
 
         return $this->content;
     }
 
+    /**
+     * @return string
+     */
     public function getMimeType(): string
     {
         return $this->mimeType;
     }
 
-	/**
-	 * @param string $path
-	 *
-	 * @return MailAttachmentInterface
-	 * @throws MailAttachmentException
-	 */
+    /**
+     * @param string $path
+     *
+     * @return MailAttachmentInterface
+     * @throws MailAttachmentException
+     */
     public function setContentFromFile(string $path): MailAttachmentInterface
     {
-    	if(empty($path)) {
-			throw new MailAttachmentException('Variable $path cannot be empty');
-		}
-		if(!($path = realpath($path))) {
-			throw new MailAttachmentException(sprintf('File "%s" cannot be found', $path));
-		}
+        if (empty($path)) {
+            throw new MailAttachmentException('Variable $path cannot be empty');
+        }
+        if (!($path = realpath($path))) {
+            throw new MailAttachmentException(sprintf('File "%s" cannot be found', $path));
+        }
 
         return $this->setContent(
             file_get_contents($path)
         );
     }
 
+    /**
+     * @param string $content
+     *
+     * @return MailAttachmentInterface
+     */
     public function setContent(string $content): MailAttachmentInterface
     {
-		if(empty($content)) {
-			throw new MailAttachmentException('Variable $content cannot be empty');
-		}
+        if (empty($content)) {
+            throw new MailAttachmentException('Variable $content cannot be empty');
+        }
 
         $this->content = $content;
 
