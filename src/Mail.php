@@ -51,7 +51,20 @@ class Mail implements MailInterface
      */
     protected $subject;
 
-    /**
+	/**
+	 * @var bool
+	 */
+    protected static $forceSender = false;
+
+	/**
+	 * Only for sendmail (postfix) to include additional -f parameter.
+	 */
+    public static function setForceSender()
+	{
+		static::$forceSender = true;
+	}
+
+	/**
      * @return MailAddressInterface
      */
     public function getFrom(): MailAddressInterface
@@ -302,7 +315,8 @@ class Mail implements MailInterface
             $to,
             $this->subject->getSubject(),
             $content,
-            implode("\r\n", $headers)
+            implode("\r\n", $headers),
+			static::$forceSender ? '-f' . $this->from->getAddress() : null
         );
     }
 
