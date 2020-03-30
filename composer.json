@@ -12,12 +12,12 @@
         }
     ],
 	"require": {
-		"php": "^7.1",
-		"devorto/mail": "^1.0.0"
+		"php": "^7.1.0",
+		"devorto/mail": "^2.0.0"
 	},
 	"autoload": {
 		"psr-4": {
-			"devorto\\mail\\php\\": "src/"
+			"Devorto\\MailPhp\\": "src/"
 		}
 	}
 }

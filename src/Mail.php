@@ -1,183 +1,202 @@
 <?php
 
-namespace devorto\mail\php;
+namespace Devorto\MailPhp;
 
-use devorto\mail\MailAddressInterface;
-use devorto\mail\MailAttachmentInterface;
-use devorto\mail\MailException;
-use devorto\mail\MailInterface;
-use devorto\mail\MailMessageInterface;
-use devorto\mail\MailSubjectInterface;
+use Devorto\Mail\Attachment;
+use Devorto\Mail\Mail as MailInterface;
+use Devorto\Mail\Recipient;
+use InvalidArgumentException;
+use RuntimeException;
 
+/**
+ * Class Mail
+ *
+ * @package Devorto\MailPhp
+ */
 class Mail implements MailInterface
 {
     /**
-     * @var MailAddressInterface
+     * @var array
      */
-    protected $from = null;
+    protected $to = [];
 
     /**
-     * @var MailAddressInterface
+     * @var array
      */
-    protected $to = null;
+    protected $cc = [];
 
     /**
-     * @var MailAddressInterface
+     * @var array
      */
-    protected $replyTo = null;
+    protected $bcc = [];
 
     /**
-     * @var MailAddressInterface
+     * @var Recipient
      */
-    protected $cc = null;
+    protected $from;
 
     /**
-     * @var MailAttachmentInterface[]
+     * @var Recipient
+     */
+    protected $replyTo;
+
+    /**
+     * @var bool
+     */
+    protected $senderFlag = false;
+
+    /**
+     * @var string
+     */
+    protected $subject;
+
+    /**
+     * @var Attachment[]
      */
     protected $attachments = [];
 
     /**
-     * @var MailMessageInterface;
+     * @var string
      */
-    protected $htmlMessage = null;
+    protected $message;
 
     /**
-     * @var MailMessageInterface
-     */
-    protected $textMessage = null;
-
-    /**
-     * @var MailSubjectInterface
-     */
-    protected $subject;
-
-	/**
-	 * @var bool
-	 */
-    protected static $forceSender = false;
-
-	/**
-	 * Only for sendmail (postfix) to include additional -f parameter.
-	 */
-    public static function setForceSender()
-	{
-		static::$forceSender = true;
-	}
-
-	/**
-     * @return MailAddressInterface
-     */
-    public function getFrom(): MailAddressInterface
-    {
-        return $this->from;
-    }
-
-    /**
-     * @param MailAddressInterface $from
+     * Mail constructor.
      *
-     * @return MailInterface
+     * @param bool $senderFlag This is only for postfix to set the header from "-f" in mail command.
      */
-    public function setFrom(MailAddressInterface $from): MailInterface
+    public function __construct(bool $senderFlag = false)
     {
-        $this->from = $from;
-
-        return $this;
+        $this->senderFlag = $senderFlag;
     }
 
     /**
-     * @return MailAddressInterface
+     * @return array
      */
-    public function getTo(): MailAddressInterface
+    public function getTo(): array
     {
         return $this->to;
     }
 
     /**
-     * @param MailAddressInterface $to
+     * @param Recipient $recipient
      *
      * @return MailInterface
      */
-    public function setTo(MailAddressInterface $to): MailInterface
+    public function addTo(Recipient $recipient): MailInterface
     {
-        $this->to = $to;
+        $this->to[] = $recipient;
 
         return $this;
     }
 
     /**
-     * @return MailAddressInterface
+     * @return array
      */
-    public function getReplyTo(): MailAddressInterface
-    {
-        return $this->replyTo;
-    }
-
-    /**
-     * @param MailAddressInterface $replyTo
-     *
-     * @return MailInterface
-     */
-    public function setReplyTo(MailAddressInterface $replyTo): MailInterface
-    {
-        $this->replyTo = $replyTo;
-
-        return $this;
-    }
-
-    /**
-     * @return MailAddressInterface
-     */
-    public function getCc(): MailAddressInterface
+    public function getCc(): array
     {
         return $this->cc;
     }
 
     /**
-     * @param MailAddressInterface $cc
+     * @param Recipient $recipient
      *
      * @return MailInterface
      */
-    public function setCc(MailAddressInterface $cc): MailInterface
+    public function addCc(Recipient $recipient): MailInterface
     {
-        $this->cc = $cc;
+        $this->cc[] = $recipient;
 
         return $this;
     }
 
     /**
-     * @return MailSubjectInterface
+     * @return array
      */
-    public function getSubject(): MailSubjectInterface
+    public function getBcc(): array
+    {
+        return $this->bcc;
+    }
+
+    /**
+     * @param Recipient $recipient
+     *
+     * @return MailInterface
+     */
+    public function addBcc(Recipient $recipient): MailInterface
+    {
+        $this->bcc[] = $recipient;
+
+        return $this;
+    }
+
+    /**
+     * @return Recipient
+     */
+    public function getFrom(): Recipient
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param Recipient $recipient
+     *
+     * @return MailInterface
+     */
+    public function setFrom(Recipient $recipient): MailInterface
+    {
+        $this->from = $recipient;
+
+        return $this;
+    }
+
+    /**
+     * @return Recipient
+     */
+    public function getReplyTo(): Recipient
+    {
+        return $this->replyTo;
+    }
+
+    /**
+     * @param Recipient $recipient
+     *
+     * @return MailInterface
+     */
+    public function setReplyTo(Recipient $recipient): MailInterface
+    {
+        $this->replyTo = $recipient;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubject(): string
     {
         return $this->subject;
     }
 
     /**
-     * @param MailSubjectInterface $subject
+     * @param string $subject
      *
      * @return MailInterface
      */
-    public function setSubject(MailSubjectInterface $subject): MailInterface
+    public function setSubject(string $subject): MailInterface
     {
+        $subject = trim($subject);
+        if (empty($subject)) {
+            throw new InvalidArgumentException('Subject cannot be empty.');
+        }
+
         $this->subject = $subject;
 
         return $this;
     }
 
     /**
-     * @param MailAttachmentInterface $attachment
-     *
-     * @return MailInterface
-     */
-    public function addAttachment(MailAttachmentInterface $attachment): MailInterface
-    {
-        $this->attachments[] = $attachment;
-
-        return $this;
-    }
-
-    /**
-     * @return MailAttachmentInterface[]
+     * @return array
      */
     public function getAttachments(): array
     {
@@ -185,125 +204,85 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return MailMessageInterface
-     */
-    public function getHtmlMessage(): MailMessageInterface
-    {
-        return $this->htmlMessage;
-    }
-
-    /**
-     * @param MailMessageInterface $message
+     * @param Attachment $attachment
      *
      * @return MailInterface
-     * @throws MailException
      */
-    public function setHtmlMessage(MailMessageInterface $message): MailInterface
+    public function addAttachment(Attachment $attachment): MailInterface
     {
-        if ($message->getMimeType() !== 'text/html') {
-            throw new MailException('Invalid mimetype set for html message');
-        }
-
-        $this->htmlMessage = $message;
+        $this->attachments[] = $attachment;
 
         return $this;
     }
 
     /**
-     * @return MailMessageInterface
+     * @return string
      */
-    public function getTextMessage(): MailMessageInterface
+    public function getMessage(): string
     {
-        return $this->textMessage;
+        return $this->message;
     }
 
     /**
-     * @param MailMessageInterface $message
+     * @param string $message
      *
      * @return MailInterface
-     * @throws MailException
      */
-    public function setTextMessage(MailMessageInterface $message): MailInterface
+    public function setMessage(string $message): MailInterface
     {
-        if ($message->getMimeType() !== 'text/plain') {
-            throw new MailException('Invalid mimetype set for text message');
+        $message = trim($message);
+        if (empty($message)) {
+            throw new InvalidArgumentException('Message cannot be empty.');
         }
 
-        $this->textMessage = $message;
+        $this->message = $message;
 
         return $this;
     }
 
     /**
-     * @return bool
-     * @throws MailException
+     * @return MailInterface
      */
-    public function send(): bool
+    public function send(): MailInterface
     {
-        if ($this->to === null) {
-            throw new MailException('We have no idea where "to" send the mail');
+        if (empty($this->to)) {
+            throw new RuntimeException('No "to" address provided.');
         }
 
-        if ($this->from === null) {
-            throw new MailException('We have no idea where the mail came from');
+        if (empty($this->from)) {
+            throw new RuntimeException('No "from" address provided.');
         }
 
-        if ($this->subject === null) {
-            throw new MailException('What "subject" should the mail have?');
+        if (empty($this->subject)) {
+            throw new RuntimeException('No "subject" provided.');
         }
 
-        if (empty($this->textMessage) && empty($this->htmlMessage)) {
-            throw new MailException('We have no "message" to send');
-        }
-
-        if ($this->to->getName() === null) {
-            $to = $this->to->getAddress();
-        } else {
-            $to = sprintf('%s <%s>', $this->to->getName(), $this->to->getAddress());
+        if (empty($this->message)) {
+            throw new RuntimeException('No "message" provided.');
         }
 
         $boundary = uniqid('', true);
 
-        if ($this->from->getName() === null) {
-            $headers[] = sprintf('From: %s', $this->from->getAddress());
+        $headers[] = 'From: ' . static::renderRecipient($this->from);
+
+        if (empty($this->replyTo)) {
+            $headers[] = 'Reply-To: ' . static::renderRecipient($this->from);
         } else {
-            $headers[] = sprintf('From: %s <%s>', $this->from->getName(), $this->from->getAddress());
+            $headers[] = 'Reply-To: ' . static::renderRecipient($this->replyTo);
         }
 
-        if ($this->replyTo === null) {
-            if ($this->from->getName() === null) {
-                $headers[] = sprintf('Reply-To: %s', $this->from->getAddress());
-            } else {
-                $headers[] = sprintf('Reply-To: %s <%s>', $this->from->getName(), $this->from->getAddress());
-            }
-        } else {
-            if ($this->replyTo->getName() === null) {
-                $headers[] = sprintf('Reply-To: %s', $this->replyTo->getAddress());
-            } else {
-                $headers[] = sprintf('Reply-To: %s <%s>', $this->replyTo->getName(), $this->replyTo->getAddress());
-            }
+        if (!empty($this->cc)) {
+            $headers[] = 'Cc: ' . implode(', ', array_map([static::class, 'renderRecipient'], $this->cc));
         }
 
-        if ($this->cc !== null) {
-            if ($this->cc->getName() === null) {
-                $headers[] = sprintf('Cc: %s', $this->cc->getAddress());
-            } else {
-                $headers[] = sprintf('Cc: %s <%s>', $this->cc->getName(), $this->cc->getAddress());
-            }
+        if (!empty($this->bcc)) {
+            $headers[] = 'Bcc: ' . implode(', ', array_map([static::class, 'renderRecipient'], $this->bcc));
         }
 
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = sprintf('Content-Type: multipart/mixed; boundary="%s"', $boundary);
 
-        $content = '';
-
-        if (isset($this->textMessage)) {
-            $content .= static::renderMessage($this->textMessage, $boundary);
-        }
-
-        if (isset($this->htmlMessage)) {
-            $content .= static::renderMessage($this->htmlMessage, $boundary);
-        }
+        $content = static::renderMessage($this->message, $boundary);
 
         foreach ($this->attachments as $attachment) {
             $content .= static::renderAttachment($attachment, $boundary);
@@ -311,38 +290,44 @@ class Mail implements MailInterface
 
         $content .= sprintf("--%s--\r\n", $boundary);
 
-        return mail(
-            $to,
-            $this->subject->getSubject(),
+        $result = mail(
+            implode(', ', array_map([static::class, 'renderRecipient'], $this->to)),
+            $this->subject,
             $content,
             implode("\r\n", $headers),
-			static::$forceSender ? '-f' . $this->from->getAddress() : null
+            $this->senderFlag ? '-f' . $this->from->getEmail() : null
         );
+
+        if (!$result) {
+            throw new RuntimeException('Mail not accepted for delivery.');
+        }
+
+        return $this;
     }
 
     /**
-     * @param MailMessageInterface $message
+     * @param string $message
      * @param string $boundary
      *
      * @return string
      */
-    protected static function renderMessage(MailMessageInterface $message, string $boundary): string
+    protected static function renderMessage(string $message, string $boundary): string
     {
         $content = sprintf("--%s\r\n", $boundary);
-        $content .= sprintf("Content-Type: %s; charset=\"UTF-8\"\r\n", $message->getMimeType());
+        $content .= "Content-Type: text/html; charset=\"UTF-8\"\r\n";
         $content .= "Content-Transfer-Encoding: base64\r\n\r\n";
-        $content .= chunk_split(base64_encode($message->getContent()), 60, "\r\n");
+        $content .= chunk_split(base64_encode($message), 60, "\r\n");
 
         return $content;
     }
 
     /**
-     * @param MailAttachmentInterface $attachment
+     * @param Attachment $attachment
      * @param string $boundary
      *
      * @return string
      */
-    protected static function renderAttachment(MailAttachmentInterface $attachment, string $boundary): string
+    protected static function renderAttachment(Attachment $attachment, string $boundary): string
     {
         $content = sprintf("--%s\r\n", $boundary);
         $content .= sprintf("Content-Type: %s; name=\"%s\"\r\n", $attachment->getMimeType(), $attachment->getName());
@@ -350,5 +335,19 @@ class Mail implements MailInterface
         $content .= chunk_split(base64_encode($attachment->getContent()), 60, "\r\n");
 
         return $content;
+    }
+
+    /**
+     * @param Recipient $recipient
+     *
+     * @return string
+     */
+    protected static function renderRecipient(Recipient $recipient): string
+    {
+        if (empty($recipient->getName())) {
+            return $recipient->getEmail();
+        }
+
+        return sprintf('%s <%s>', $recipient->getName(), $recipient->getEmail());
     }
 }
