@@ -234,10 +234,6 @@ class Mail implements MailInterface
             $this->senderFlag ? '-f' . $this->from->getEmail() : null
         );
 
-        if (!$result) {
-            throw new RuntimeException('Mail not accepted for delivery.');
-        }
-
         // Cleanup internal data after sending, because this class me be re-used.
         $this->to = [];
         $this->cc = [];
@@ -247,6 +243,10 @@ class Mail implements MailInterface
         $this->subject = null;
         $this->message = null;
         $this->attachments = [];
+
+        if (!$result) {
+            throw new RuntimeException('Mail not accepted for delivery.');
+        }
 
         return $this;
     }
