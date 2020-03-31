@@ -71,14 +71,6 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return array
-     */
-    public function getTo(): array
-    {
-        return $this->to;
-    }
-
-    /**
      * @param Recipient $recipient
      *
      * @return MailInterface
@@ -88,14 +80,6 @@ class Mail implements MailInterface
         $this->to[] = $recipient;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCc(): array
-    {
-        return $this->cc;
     }
 
     /**
@@ -111,14 +95,6 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return array
-     */
-    public function getBcc(): array
-    {
-        return $this->bcc;
-    }
-
-    /**
      * @param Recipient $recipient
      *
      * @return MailInterface
@@ -128,14 +104,6 @@ class Mail implements MailInterface
         $this->bcc[] = $recipient;
 
         return $this;
-    }
-
-    /**
-     * @return Recipient
-     */
-    public function getFrom(): Recipient
-    {
-        return $this->from;
     }
 
     /**
@@ -151,14 +119,6 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return Recipient
-     */
-    public function getReplyTo(): Recipient
-    {
-        return $this->replyTo;
-    }
-
-    /**
      * @param Recipient $recipient
      *
      * @return MailInterface
@@ -168,14 +128,6 @@ class Mail implements MailInterface
         $this->replyTo = $recipient;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubject(): string
-    {
-        return $this->subject;
     }
 
     /**
@@ -196,14 +148,6 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return array
-     */
-    public function getAttachments(): array
-    {
-        return $this->attachments;
-    }
-
-    /**
      * @param Attachment $attachment
      *
      * @return MailInterface
@@ -213,14 +157,6 @@ class Mail implements MailInterface
         $this->attachments[] = $attachment;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMessage(): string
-    {
-        return $this->message;
     }
 
     /**
@@ -301,6 +237,16 @@ class Mail implements MailInterface
         if (!$result) {
             throw new RuntimeException('Mail not accepted for delivery.');
         }
+
+        // Cleanup internal data after sending, because this class me be re-used.
+        $this->to = [];
+        $this->cc = [];
+        $this->bcc = [];
+        $this->from = null;
+        $this->replyTo = null;
+        $this->subject = null;
+        $this->message = null;
+        $this->attachments = [];
 
         return $this;
     }
