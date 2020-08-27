@@ -1,2 +1,4 @@
 # Mailer based on php mail() function and devorto mail interface.
-Uses: https://github.com/devorto/mail
+Uses: [devorto/mail](https://github.com/devorto/mail)
+
+Example: [example/test.php](example/test.php) 
