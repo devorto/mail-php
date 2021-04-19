@@ -76,7 +76,9 @@ class Mailer implements MailerInterface
         $headers[] = sprintf('Content-Type: multipart/mixed; boundary="%s"', $boundary);
 
         $content = static::renderMessage($mail->getMessage(), $boundary);
-        $content .= implode('', array_map([static::class, 'renderAttachment'], $mail->getAttachments()));
+        foreach ($mail->getAttachments() as $attachment) {
+            $content .= static::renderAttachment($attachment, $boundary);
+        }
 
         $content .= sprintf("--%s--\r\n", $boundary);
 
