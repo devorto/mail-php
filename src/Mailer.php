@@ -64,12 +64,12 @@ class Mailer implements MailerInterface
             $headers[] = 'Reply-To: ' . static::renderRecipient($mail->getReplyTo());
         }
 
-        if (!empty($this->cc)) {
-            $headers[] = 'Cc: ' . implode(', ', array_map([static::class, 'renderRecipient'], $this->cc));
+        if (!empty($mail->getCc())) {
+            $headers[] = 'Cc: ' . implode(', ', array_map([static::class, 'renderRecipient'], $mail->getCc()));
         }
 
-        if (!empty($this->bcc)) {
-            $headers[] = 'Bcc: ' . implode(', ', array_map([static::class, 'renderRecipient'], $this->bcc));
+        if (!empty($mail->getBcc())) {
+            $headers[] = 'Bcc: ' . implode(', ', array_map([static::class, 'renderRecipient'], $mail->getBcc()));
         }
 
         $headers[] = 'MIME-Version: 1.0';
