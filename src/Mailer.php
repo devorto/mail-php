@@ -19,7 +19,7 @@ class Mailer implements MailerInterface
     /**
      * @var bool
      */
-    protected $senderFlag = false;
+    protected bool $senderFlag = false;
 
     /**
      * Mail constructor.
@@ -87,7 +87,7 @@ class Mailer implements MailerInterface
             $mail->getSubject(),
             $content,
             implode("\r\n", $headers),
-            $this->senderFlag ? '-f' . $mail->getFrom()->getEmail() : null
+            $this->senderFlag ? '-f' . $mail->getFrom()->getEmail() : ''
         );
 
         if (!$result) {
@@ -106,7 +106,7 @@ class Mailer implements MailerInterface
         $content = sprintf("--%s\r\n", $boundary);
         $content .= "Content-Type: text/html; charset=\"UTF-8\"\r\n";
         $content .= "Content-Transfer-Encoding: base64\r\n\r\n";
-        $content .= chunk_split(base64_encode($message), 60, "\r\n");
+        $content .= chunk_split(base64_encode($message), 60);
 
         return $content;
     }
@@ -122,7 +122,7 @@ class Mailer implements MailerInterface
         $content = sprintf("--%s\r\n", $boundary);
         $content .= sprintf("Content-Type: %s; name=\"%s\"\r\n", $attachment->getMimeType(), $attachment->getName());
         $content .= "Content-Transfer-Encoding: base64\r\n\r\n";
-        $content .= chunk_split(base64_encode($attachment->getContent()), 60, "\r\n");
+        $content .= chunk_split(base64_encode($attachment->getContent()), 60);
 
         return $content;
     }
